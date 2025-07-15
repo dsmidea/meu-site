@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>TechLive Academy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+  
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+    html, body {
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #0e0e0e, #121212);
+      color: #ffffff;
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+      padding-bottom: 80px;
+      scroll-behavior: smooth;
+    }
+  
+    img, iframe { max-width: 100%; height: auto; display: block; }
+    button, a { transition: all 0.3s ease-in-out; }
+    section { transition: all 0.3s ease-in-out; }
+  
+    header, #sidebar, #main-content { display: none; }
+    #app-ready header, #app-ready #sidebar, #app-ready #main-content { display: block; }
+  
+    header {
+      position: fixed; top: 0; left: 0; width: 100%;
+      background: rgba(18, 18, 18, 0.95);
+      padding: 20px; display: flex; align-items: center; justify-content: space-between; z-index: 999;
+      box-shadow: 0 2px 8px rgba(0,255,153,0.2);
+    }
+  
+    .menu-toggle {
+      background: none; border: none; color: #00ff99; font-size: 1.8em; cursor: pointer; z-index: 1001;
+    }
+  
+    .user-icon {
+      position: fixed;
+      top: 20px;
+      right: 0;
+      background: none;
+      border: none;
+      color: #00ff99;
+      font-size: 1.8em;
+      cursor: pointer;
+      padding: 10px 15px;
+      /* --- Z-INDEX ATUALIZADO --- */
+      z-index: 9999; 
+    }
+  
+    header h1 {
+      color: #00ff99; font-size: 1.5em; text-align: center; flex: 1; letter-spacing: 1px;
+    }
+  
+    #sidebar {
+      position: fixed; top: 0; left: -100%; width: 250px; height: 100%;
+      background-color: #1c1c1c; overflow-y: auto; transition: left 0.3s ease; padding: 20px; z-index: 1000;
+      box-shadow: 4px 0 10px rgba(0,0,0,0.5);
+    }
+  
+    #sidebar.active { left: 0; }
+  
+    #sidebar nav a {
+      display: flex; align-items: center; gap: 10px;
+      color: #00ff99; text-decoration: none; margin: 15px 0;
+      font-weight: bold; font-size: 1.1em; transition: color 0.3s ease;
+      cursor: pointer;
+    }
+  
+    #sidebar nav a:hover { color: #00e68a; }
+  
+    #main-content {
+      margin-left: 0; transition: margin-left 0.3s ease; padding-top: 90px;
+      padding-left: 20px; padding-right: 20px;
+    }
+  
+    section {
+      padding: 20px; max-width: 1000px; margin: auto; display: none;
+      background: rgba(18, 18, 18, 0.8); border-radius: 12px; box-shadow: 0 0 15px rgba(0,255,153,0.1);
+    }
+  
+    section.active { display: block; animation: fadeIn 1s ease; }
+  
+    #intro-slide {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 100vh; text-align: center; padding: 20px;
+      animation: fadeIn 2s ease;
+      background: linear-gradient(135deg, #0e0e0e, #1a1a1a);
+    }
+  
+    #typed-text { font-size: 1.2em; max-width: 700px; margin-top: 20px; }
+  
+    #intro-slide h2 {
+      font-size: 2.5em; color: #00ff99;
+      text-shadow: 0 0 5px #00ff99;
+      animation: glow 1.5s infinite alternate;
+    }
+  
+    @keyframes glow {
+      from { text-shadow: 0 0 5px #00ff99; }
+      to { text-shadow: 0 0 20px #00ff99; }
+    }
+  
+    #start-btn {
+      margin-top: 30px; padding: 12px 28px; background-color: #00ff99; color: #000;
+      border: none; font-size: 1em; border-radius: 8px; cursor: pointer; display: none;
+    }
+  
+    #start-btn:hover {
+      background-color: #00e68a; transform: scale(1.05);
+    }
+  
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  
+    .video-container {
+      position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;
+      border-radius: 12px; box-shadow: 0 0 30px rgba(0,255,153,0.2);
+    }
+  
+    .video-container iframe {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
+    }
+  
+    #login-modal, #register-modal {
+      position: fixed; top: 60px; right: 20px;
+      background: #1a1a1a; border: 1px solid #00ff99;
+      box-shadow: 0 0 15px rgba(0, 255, 153, 0.2);
+      padding: 20px; width: 320px; border-radius: 10px;
+      /* --- Z-INDEX ATUALIZADO --- */
+      z-index: 10001; 
+      display: none; flex-direction: column; gap: 12px;
+    }
+  
+    #login-modal.active, #register-modal.active { display: flex; }
+  
+    #login-modal input, #register-modal input, #register-modal select {
+      padding: 10px; border: none; border-radius: 6px;
+      background: #2a2a2a; color: #fff; font-size: 1em;
+    }
+  
+    #login-modal button, #register-modal button {
+      padding: 10px; background-color: #00ff99; color: black;
+      border: none; border-radius: 6px; cursor: pointer;
+      font-weight: bold; font-size: 1em;
+    }
+  
+    #login-modal button:hover, #register-modal button:hover { background-color: #00e68a; }
+  
+    #login-modal small, #register-modal small {
+      color: #ccc; text-align: center; font-size: 0.85em;
+    }
+  
+    #register-modal .back-login {
+      background: none; color: #00ff99; border: none;
+      cursor: pointer; font-size: 0.9em; text-align: center; margin-top: 5px;
+    }
+  
+    #register-modal .back-login:hover { text-decoration: underline; }
+  
+    .error-msg {
+      color: #ff5555; font-size: 0.85em;
+      margin-top: -8px; margin-bottom: 8px;
+    }
+  
+    #chat-panel {
+      position: fixed; right: -100%; top: 0;
+      width: 320px; height: 100vh; background-color: #1a1a1a;
+      border-left: 2px solid #00ff99; box-shadow: -4px 0 10px rgba(0, 255, 153, 0.3);
+      padding: 20px 15px; transition: right 0.3s ease-in-out;
+      /* --- Z-INDEX ATUALIZADO --- */
+      z-index: 10000; 
+      display: flex; flex-direction: column;
+    }
+  
+    #chat-panel.active { right: 0; }
+  
+    .chat-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 10px; font-size: 1.2em; color: #00ff99;
+    }
+  
+    .chat-header button {
+      background: none; border: none; color: #00ff99;
+      font-size: 1.2em; cursor: pointer;
+    }
+  
+    #chat-panel #messages {
+      flex: 1; overflow-y: auto; background: #121212;
+      border-radius: 8px; padding: 10px; margin-bottom: 10px; font-size: 0.95em;
+    }
+  
+    #chat-panel #messages div {
+      background: #222; color: #fff; padding: 6px 10px;
+      margin-bottom: 8px; border-radius: 6px; word-break: break-word;
+    }
+  
+    #chat-form { display: flex; gap: 8px; }
+  
+    #chat-input {
+      flex: 1; padding: 10px; border-radius: 8px;
+      border: none; background: #2a2a2a; color: white;
+    }
+  
+    #chat-form button {
+      padding: 10px 16px; background-color: #00ff99;
+      border: none; border-radius: 8px; color: black; cursor: pointer;
+    }
+  
+    #chat-form button:hover { background-color: #00e68a; }
+  
+    #clear-chat-btn {
+      background: #ff5555; color: white; border: none;
+      border-radius: 6px; padding: 8px 12px; cursor: pointer;
+      font-weight: bold; margin-bottom: 10px; align-self: flex-start;
+      transition: background-color 0.3s ease;
+    }
+  
+    #clear-chat-btn:hover { background-color: #cc4444; }
+    
+    footer {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        background: #121212;
+        color: #ccc;
+        text-align: center;
+        padding: 15px 0;
+        z-index: 998;
+        box-shadow: 0 -2px 8px rgba(0,255,153,0.15);
+    }
+
+    @media screen and (max-width: 768px) {
+      body { font-size: 15px; }
+      header h1 { font-size: 1.2em; }
+      #sidebar nav a { font-size: 1em; }
+      #start-btn { padding: 10px 20px; font-size: 0.95em; }
+    }
+  
+    @media screen and (max-width: 480px) {
+      header h1 { font-size: 1em; }
+      #start-btn { font-size: 0.85em; padding: 8px 16px; }
+      #login-modal, #register-modal { width: 90vw; right: 5vw; }
+      #chat-panel { width: 90vw; }
+    }
+  
+  </style>
+</head>
+<body>
+  <audio id="intro-audio" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_d44e1dd5a4.mp3?filename=ambient-intro-105417.mp3" type="audio/mpeg">
+  </audio>
+  
+  <div id="intro-slide">
+    <h2>Bem-vindo à TechLive Academy</h2>
+    <p id="typed-text"></p>
+    <button id="start-btn" onclick="startLive()">Começar</button>
+  </div>
+  
+  <div id="app">
+    <header>
+      <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+      <h1>TechLive Academy</h1>
+    </header>
+
+    <button class="user-icon" onclick="toggleLoginModal()"><i class="fas fa-user-circle"></i></button>
+
+    <!-- Modal Login -->
+    <div id="login-modal">
+      <input type="email" id="login-email" placeholder="Seu email" />
+      <div id="login-email-error" class="error-msg"></div>
+      <input type="password" id="login-password" placeholder="Sua senha" />
+      <div id="login-password-error" class="error-msg"></div>
+      <button onclick="validateLogin()">Entrar</button>
+      <button onclick="openRegister()">Cadastrar</button>
+      <small>Ao se cadastrar, você aceita nossos termos.</small>
+    </div>
+
+    <!-- Modal Cadastro -->
+    <div id="register-modal">
+      <input type="text" id="register-contact" placeholder="Número ou email" />
+      <div id="register-contact-error" class="error-msg"></div>
+      <input type="password" id="register-password" placeholder="Senha (mínimo 6 caracteres)" />
+      <div id="register-password-error" class="error-msg"></div>
+      <input type="date" id="register-birthdate" placeholder="Data de nascimento" />
+      <div id="register-birthdate-error" class="error-msg"></div>
+      <select id="register-gender">
+        <option value="" disabled selected>Gênero</option>
+        <option value="masculino">Masculino</option>
+        <option value="feminino">Feminino</option>
+        <option value="outro">Outro</option>
+        <option value="prefiro-nao-dizer">Prefiro não dizer</option>
+      </select>
+      <div id="register-gender-error" class="error-msg"></div>
+      <button onclick="validateRegister()">Cadastrar</button>
+      <button class="back-login" onclick="backToLogin()">Voltar ao Login</button>
+    </div>
+
+    <div id="sidebar">
+      <nav>
+        <a onclick="showSection('aovivo')"><i class="fas fa-broadcast-tower"></i> Ao Vivo</a>
+        <a onclick="showSection('inicio')"><i class="fas fa-home"></i> Início</a>
+        <a onclick="showSection('gravadas')"><i class="fas fa-video"></i> Gravadas</a>
+        <a onclick="showSection('inscricao')"><i class="fas fa-credit-card"></i> Inscrição</a>
+        <a onclick="showSection('sobre')"><i class="fas fa-info-circle"></i> Sobre</a>
+        <a onclick="showSection('contato')"><i class="fas fa-envelope"></i> Contato</a>
+        <a onclick="toggleChat()"><i class="fas fa-comments"></i> LiveChat</a>
+      </nav>
+    </div>
+
+    <div id="main-content">
+      <section id="aovivo" class="active">
+        <h2>🔴 Aula Ao Vivo</h2>
+        <div class="video-container">
+          <iframe src="https://www.youtube.com/embed/live_stream?channel=UCt4Me1wXvU16CigA9kaBoSQ" allowfullscreen></iframe>
+        </div>
+      </section>
+
+      <section id="inicio">
+        <h2>Bem-vindo à TechLive Academy</h2>
+        <p>Uma iniciativa moçambicana focada em tornar o conhecimento acessível a todos.</p>
+      </section>
+
+      <section id="gravadas">
+        <h2>Aulas Gravadas</h2>
+        <ul>
+          <li><a href="#">Aula 1: Fundamentos da Programação</a></li>
+          <li><a href="#">Aula 2: HTML e CSS do Zero</a></li>
+          <li><a href="#">Aula 3: Python Iniciante</a></li>
+        </ul>
+      </section>
+
+      <section id="inscricao">
+        <h2>📥 Inscrição e Pagamento</h2>
+        <p>Escolha o plano, preencha os dados e pague com o método que preferir.</p>
+      </section>
+
+      <section id="sobre">
+        <h2>Sobre</h2>
+        <p>O TechLive Academy é um projeto fundado por <strong>Marcos Mário Santana</strong> com a missão de ensinar tecnologia e programação ao vivo para jovens e adultos.</p>
+      </section>
+
+      <section id="contato">
+        <h2>Contato</h2>
+        <p>Email: contato@techliveacademy.org</p>
+        <p>WhatsApp: <a href="https://wa.me/258849286034" target="_blank" rel="noopener">+258 84 928 6034</a></p>
+      </section>
+    </div>
+
+    <!-- Chat lateral -->
+    <div id="chat-panel">
+      <div class="chat-header">
+        <span>💬 Chat ao Vivo</span>
+        <button onclick="toggleChat()">✖</button>
+      </div>
+      <button id="clear-chat-btn" title="Limpar mensagens do chat">🗑️ Limpar Chat</button>
+      <div id="messages"></div>
+      <form id="chat-form" onsubmit="sendMessage(event)">
+        <input type="text" id="chat-input" placeholder="Digite sua mensagem..." required autocomplete="off" />
+        <button type="submit">Enviar</button>
+      </form>
+    </div>
+  </div>
+  
+  <footer>
+    © 2025 TechLive Academy. Desenvolvido com dedicação em Moçambique.
+  </footer>
+  
+  <script>
+    // Funções do site
+    function toggleSidebar() {
+      document.getElementById("sidebar").classList.toggle("active");
+    }
+  
+    function closeSidebar() {
+      document.getElementById("sidebar").classList.remove("active");
+    }
+  
+    function showSection(id) {
+      closeSidebar();
+      const sections = document.querySelectorAll("#main-content section");
+      sections.forEach(s => s.classList.remove("active"));
+      const selected = document.getElementById(id);
+      if (selected) selected.classList.add("active");
+    }
+  
+    // Intro slide - texto digitado
+    const typedText = [
+      "Você está prestes a iniciar sua jornada na programação.",
+      "Aprenda, pratique e transforme seu futuro.",
+      "Conteúdo ao vivo, interativo e gratuito.",
+      "Aqui você aprende do básico ao avançado com Marcos Mário Santana.",
+      "Vamos juntos construir o futuro da tecnologia em Moçambique."
+    ];
+    let typedIndex = 0;
+    let charIndex = 0;
+    let typingSpeed = 40;
+    let deleting = false;
+  
+    const typedTextElement = document.getElementById("typed-text");
+    const startBtn = document.getElementById("start-btn");
+    const introAudio = document.getElementById("intro-audio");
+    const introSlide = document.getElementById("intro-slide");
+    const app = document.getElementById("app");
+  
+    function typeEffect() {
+      if (!typedTextElement) return;
+      if (!deleting) {
+        typedTextElement.textContent += typedText[typedIndex][charIndex];
+        charIndex++;
+        if (charIndex === typedText[typedIndex].length) {
+          deleting = true;
+          setTimeout(typeEffect, 1500);
+        } else {
+          setTimeout(typeEffect, typingSpeed);
+        }
+      } else {
+        typedTextElement.textContent = typedText[typedIndex].substring(0, charIndex - 1);
+        charIndex--;
+        if (charIndex === 0) {
+          deleting = false;
+          typedIndex++;
+          if (typedIndex >= typedText.length) {
+            startBtn.style.display = "inline-block";
+            introAudio.play();
+            return;
+          }
+          setTimeout(typeEffect, 500);
+        } else {
+          setTimeout(typeEffect, typingSpeed / 2);
+        }
+      }
+    }
+    typeEffect();
+  
+    function startLive() {
+      introSlide.style.display = "none";
+      introAudio.pause();
+      app.classList.add("app-ready");
+      document.body.style.overflow = "auto";
+      document.getElementById("main-content").style.marginLeft = "0";
+      document.body.id = "app-ready";
+      showSection("aovivo");
+    }
+  
+    // Login Modal
+    const loginModal = document.getElementById("login-modal");
+    const registerModal = document.getElementById("register-modal");
+  
+    function toggleLoginModal() {
+      // Fecha o chat se estiver aberto
+      document.getElementById("chat-panel").classList.remove("active");
+  
+      if (loginModal.classList.contains("active")) {
+        loginModal.classList.remove("active");
+        registerModal.classList.remove("active");
+      } else {
+        loginModal.classList.add("active");
+        registerModal.classList.remove("active");
+      }
+    }
+  
+    function openRegister() {
+      loginModal.classList.remove("active");
+      registerModal.classList.add("active");
+    }
+  
+    function backToLogin() {
+      registerModal.classList.remove("active");
+      loginModal.classList.add("active");
+    }
+  
+    // Validação simples login
+    function validateLogin() {
+      let email = document.getElementById("login-email").value.trim();
+      let password = document.getElementById("login-password").value.trim();
+      let valid = true;
+  
+      const emailError = document.getElementById("login-email-error");
+      const passwordError = document.getElementById("login-password-error");
+      emailError.textContent = "";
+      passwordError.textContent = "";
+  
+      if (!email || !email.includes("@")) {
+        emailError.textContent = "Digite um email válido.";
+        valid = false;
+      }
+      if (password.length < 6) {
+        passwordError.textContent = "Senha deve ter ao menos 6 caracteres.";
+        valid = false;
+      }
+  
+      if (valid) {
+        alert("Login efetuado com sucesso!");
+        loginModal.classList.remove("active");
+      }
+    }
+  
+    // Validação simples cadastro
+    function validateRegister() {
+      let contact = document.getElementById("register-contact").value.trim();
+      let password = document.getElementById("register-password").value.trim();
+      let birthdate = document.getElementById("register-birthdate").value;
+      let gender = document.getElementById("register-gender").value;
+  
+      let valid = true;
+  
+      document.getElementById("register-contact-error").textContent = "";
+      document.getElementById("register-password-error").textContent = "";
+      document.getElementById("register-birthdate-error").textContent = "";
+      document.getElementById("register-gender-error").textContent = "";
+  
+      if (!contact) {
+        document.getElementById("register-contact-error").textContent = "Informe seu email ou número.";
+        valid = false;
+      }
+      if (password.length < 6) {
+        document.getElementById("register-password-error").textContent = "Senha deve ter ao menos 6 caracteres.";
+        valid = false;
+      }
+      if (!birthdate) {
+        document.getElementById("register-birthdate-error").textContent = "Informe sua data de nascimento.";
+        valid = false;
+      }
+      if (!gender) {
+        document.getElementById("register-gender-error").textContent = "Selecione seu gênero.";
+        valid = false;
+      }
+  
+      if (valid) {
+        alert("Cadastro realizado com sucesso!");
+        registerModal.classList.remove("active");
+        loginModal.classList.add("active");
+      }
+    }
+  
+    // CHAT functionality
+    const chatPanel = document.getElementById("chat-panel");
+    const messagesContainer = document.getElementById("messages");
+    const chatForm = document.getElementById("chat-form");
+    const chatInput = document.getElementById("chat-input");
+    const clearChatBtn = document.getElementById("clear-chat-btn");
+  
+    function toggleChat() {
+      // Fecha os modais de login/cadastro se estiverem abertos
+      loginModal.classList.remove("active");
+      registerModal.classList.remove("active");
+  
+      chatPanel.classList.toggle("active");
+      closeSidebar();
+      if (chatPanel.classList.contains("active")) {
+        chatInput.focus();
+      }
+    }
+  
+    // Load chat messages from localStorage
+    function loadMessages() {
+      messagesContainer.innerHTML = "";
+      const storedMessages = JSON.parse(localStorage.getItem("techlive-chat-messages")) || [];
+      storedMessages.forEach(msg => {
+        addMessageToDOM(msg);
+      });
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+  
+    // Add message to DOM
+    function addMessageToDOM(message) {
+      const div = document.createElement("div");
+      div.textContent = message;
+      messagesContainer.appendChild(div);
+    }
+  
+    // Send message handler
+    function sendMessage(e) {
+      e.preventDefault();
+      const msg = chatInput.value.trim();
+      if (!msg) return;
+      addMessageToDOM(msg);
+      saveMessage(msg);
+      chatInput.value = "";
+      chatInput.focus();
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+  
+    // Save message to localStorage
+    function saveMessage(msg) {
+      let storedMessages = JSON.parse(localStorage.getItem("techlive-chat-messages")) || [];
+      storedMessages.push(msg);
+      localStorage.setItem("techlive-chat-messages", JSON.stringify(storedMessages));
+    }
+  
+    // Clear chat messages
+    clearChatBtn.addEventListener("click", () => {
+      if (confirm("Tem certeza que deseja limpar todas as mensagens do chat?")) {
+        localStorage.removeItem("techlive-chat-messages");
+        messagesContainer.innerHTML = "";
+      }
+    });
+  
+    // Inicialização
+    document.addEventListener("DOMContentLoaded", () => {
+      loadMessages();
+  
+      const navLinks = document.querySelectorAll("#sidebar nav a");
+      navLinks.forEach(link => {
+        link.addEventListener("click", () => {
+          closeSidebar();
+        });
+      });
+    });
+  
+    // Fecha sidebar se clicar fora no mobile
+    document.body.addEventListener("click", (e) => {
+      const sidebar = document.getElementById("sidebar");
+      if (sidebar.classList.contains("active") && !sidebar.contains(e.target) && !e.target.classList.contains("menu-toggle")) {
+        closeSidebar();
+      }
+    });
+  
+  </script>
+</body>
+</html>
